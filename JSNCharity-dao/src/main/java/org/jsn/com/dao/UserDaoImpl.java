@@ -11,15 +11,36 @@ import org.jsn.com.entity.UserEntity;
 import org.jsn.dto.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import lombok.AllArgsConstructor;
 public class UserDaoImpl implements UserDao {
 
-	
 	private final SessionWrapper session;
-	
+
 	@Autowired
-	public  UserDaoImpl(SessionWrapper session) {
+	public UserDaoImpl(SessionWrapper session) {
 		this.session = session;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public UserEntity authernticateUser(String userName, String password) {
+		UserDto dto = new UserDto();
+		dto.setPassword(password);
+		Criteria criteria = this.session.createCriteria(UserDto.class);
+		Map<String, String> propertyNameValues = new HashMap<>();
+		propertyNameValues.put("userName", userName);
+		propertyNameValues.put("password", dto.getPassword());
+		List<UserDto> list = criteria.add(Restrictions.allEq(propertyNameValues)).list();
+		if (list.isEmpty()) {
+			return null;
+		} else {
+			return UserEntity.formEntity(list.get(0));
+		}
+	}
+
+	@Override
+	public boolean deleteUser(UserEntity userObjeect) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	@Override
@@ -40,29 +61,4 @@ public class UserDaoImpl implements UserDao {
 		return false;
 	}
 
-	@Override
-	public boolean deleteUser(UserEntity userObjeect) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public UserEntity authernticateUser(String userName, String password) {
-		UserDto dto = new UserDto();
-		dto.setPassword(password);
-		Criteria criteria = session.createCriteria(UserDto.class);
-		Map<String,String> propertyNameValues = new HashMap<>();
-		propertyNameValues.put("userName", userName);
-		propertyNameValues.put("password", dto.getPassword());
-		List<UserDto> list = criteria.add(Restrictions.allEq(propertyNameValues)).list();
-		if(list.isEmpty()) {
-			return null;
-		}else {
-			return UserEntity.formEntity(list.get(0));
-		}
-	}
-	
-	
-	
 }

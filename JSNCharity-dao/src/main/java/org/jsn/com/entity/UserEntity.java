@@ -8,6 +8,17 @@ import lombok.Data;
 @Data
 public class UserEntity {
 
+	public static UserEntity formEntity(UserDto dto) {
+		UserEntity entity = new UserEntity();
+		entity.setUserName(dto.getUserName());
+		entity.setRole(dto.getRole());
+		entity.setName(dto.getName());
+		entity.setAddress(dto.getAddress());
+		entity.setCity(dto.getCity());
+		entity.setContactNo(dto.getContactNo());
+		return entity;
+	}
+
 	private String userName;
 
 	private String password;
@@ -21,28 +32,17 @@ public class UserEntity {
 	private String city;
 
 	private String contactNo;
-	
+
 	public UserDto formDto() {
-		UserDto dto =new UserDto();
-		dto.setUserName(userName);
-		dto.setPassword(password);
-		dto.setRole(role);
-		dto.setName(name);
-		dto.setAddress(address);
-		dto.setCity(city);
-		dto.setContactNo(contactNo);
+		UserDto dto = new UserDto();
+		dto.setUserName(this.userName);
+		dto.setPassword(this.password);
+		dto.setRole(this.role);
+		dto.setName(this.name);
+		dto.setAddress(this.address);
+		dto.setCity(this.city);
+		dto.setContactNo(this.contactNo);
 		return dto;
-	}
-	
-	public static UserEntity formEntity(UserDto dto) {
-		UserEntity entity = new UserEntity();
-		entity.setUserName(dto.getUserName());
-		entity.setRole(dto.getRole());
-		entity.setName(dto.getName());
-		entity.setAddress(dto.getAddress());
-		entity.setCity(dto.getCity());
-		entity.setContactNo(dto.getContactNo());
-		return entity;
 	}
 
 }

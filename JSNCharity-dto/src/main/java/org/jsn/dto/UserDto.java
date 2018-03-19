@@ -10,31 +10,25 @@ import javax.persistence.Table;
 import org.jsn.enums.Role;
 
 @Entity
-@Table(name="users")
+@Table(name = "users")
 public class UserDto {
 
-	private static transient final String SALT = "password-hash"; 
+	private static transient final String SALT = "password-hash";
 
 	@Id
 	private String userName;
-	
+
 	private String password;
-	
+
 	private Role role;
-	
+
 	private String name;
-	
+
 	private String address;
-	
+
 	private String city;
-	
+
 	private String contactNo;
-	
-	@Override
-	public String toString() {
-		return "UserDto [userName=" + userName + ", role=" + role + ", name=" + name + ", address=" + address
-				+ ", city=" + city + ", contactNo=" + contactNo + "]";
-	}
 
 	private String generateHash(String input) {
 		StringBuilder hash = new StringBuilder();
@@ -42,10 +36,8 @@ public class UserDto {
 		try {
 			MessageDigest sha = MessageDigest.getInstance("SHA-1");
 			byte[] hashedBytes = sha.digest(input.getBytes());
-			char[] digits = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-					'a', 'b', 'c', 'd', 'e', 'f' };
-			for (int idx = 0; idx < hashedBytes.length; ++idx) {
-				byte b = hashedBytes[idx];
+			char[] digits = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+			for (byte b : hashedBytes) {
 				hash.append(digits[(b & 0xf0) >> 4]);
 				hash.append(digits[b & 0x0f]);
 			}
@@ -55,60 +47,66 @@ public class UserDto {
 
 		return hash.toString();
 	}
-	
-	public String getUserName() {
-		return userName;
+
+	public String getAddress() {
+		return this.address;
 	}
 
-	public void setUserName(String userName) {
-		this.userName = userName;
+	public String getCity() {
+		return this.city;
+	}
+
+	public String getContactNo() {
+		return this.contactNo;
+	}
+
+	public String getName() {
+		return this.name;
 	}
 
 	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = generateHash(password+SALT);
+		return this.password;
 	}
 
 	public Role getRole() {
-		return role;
+		return this.role;
 	}
 
-	public void setRole(Role role) {
-		this.role = role;
-	}
-	
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getAddress() {
-		return address;
+	public String getUserName() {
+		return this.userName;
 	}
 
 	public void setAddress(String address) {
 		this.address = address;
 	}
 
-	public String getCity() {
-		return city;
-	}
-
 	public void setCity(String city) {
 		this.city = city;
 	}
 
-	public String getContactNo() {
-		return contactNo;
-	}
-
 	public void setContactNo(String contactNo) {
 		this.contactNo = contactNo;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setPassword(String password) {
+		this.password = this.generateHash(password + SALT);
+	}
+
+	public void setRole(Role role) {
+		this.role = role;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	@Override
+	public String toString() {
+		return "UserDto [userName=" + this.userName + ", role=" + this.role + ", name=" + this.name + ", address="
+				+ this.address + ", city=" + this.city + ", contactNo=" + this.contactNo + "]";
 	}
 }
