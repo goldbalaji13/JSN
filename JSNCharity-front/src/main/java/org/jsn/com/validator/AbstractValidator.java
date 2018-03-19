@@ -36,7 +36,8 @@ public abstract class AbstractValidator extends InputVerifier implements KeyList
         c.addKeyListener(this);
         c.setInputVerifier(this);
         messageLabel = new JLabel(message + " ");
-        image = new JLabel(new ImageIcon("exception_16x16.png"));
+        String path = getClass().getClassLoader().getResource("images/exception_16x16.png").getPath();
+        image = new JLabel(new ImageIcon(path));
         component = c;
     }
 	
@@ -141,16 +142,16 @@ public abstract class AbstractValidator extends InputVerifier implements KeyList
      * @see KeyListener
      */
 	
-    public void keyTyped(KeyEvent e) {
-        popup.setVisible(false);
-        verify(component);
-    }
+    public void keyTyped(KeyEvent e) {}
 	
     /**
      * @see KeyListener
      */
 	
-    public void keyReleased(KeyEvent e) {}
+    public void keyReleased(KeyEvent e) {
+        popup.setVisible(false);
+        verify(component);
+    }
 	
     private void initComponents() {
         popup.getContentPane().setLayout(new FlowLayout());
