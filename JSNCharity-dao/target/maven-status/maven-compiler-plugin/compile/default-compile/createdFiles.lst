@@ -1,0 +1,5 @@
+org\jsn\com\dao\UserDaoImpl.class
+org\jsn\com\config\Initiater.class
+org\jsn\com\datasource\SessionWrapper.class
+org\jsn\com\entity\UserEntity.class
+org\jsn\com\dao\UserDao.class
