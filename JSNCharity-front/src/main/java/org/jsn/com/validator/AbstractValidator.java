@@ -15,6 +15,8 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+import lombok.Data;
+
 /**
  * This class handles most of the details of validating a component, including
  * all display elements such as popup help boxes and color changes.
@@ -23,7 +25,7 @@ import javax.swing.JLabel;
  * @version Beta 1
  * @see WantsValidationStatus
  */
-
+@Data
 public abstract class AbstractValidator extends InputVerifier implements KeyListener {
 	private JDialog popup;
 	private Object parent;

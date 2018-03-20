@@ -1,4 +1,4 @@
-package org.jsn.com.views;
+package org.jsn.com.views.dialogues;
 
 import java.awt.Component;
 import java.awt.Frame;
@@ -12,13 +12,14 @@ import java.util.Objects;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
 
 import org.eclipse.wb.swing.FocusTraversalOnArray;
 import org.jsn.com.dao.UserDao;
 import org.jsn.com.entity.UserEntity;
 import org.jsn.com.validator.AbstractValidator;
 import org.jsn.com.validator.WantsValidationStatus;
-import org.jsn.enums.Role;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -32,53 +33,8 @@ import org.jsn.enums.Role;
  */
 public class JSNLogInForm extends JDialog {
 
-	/**
-	 * @param args
-	 *            the command line arguments
-	 */
-	public static void main(String args[]) {
-		/* Set the Nimbus look and feel */
-		// <editor-fold defaultstate="collapsed" desc=" Look and feel setting code
-		// (optional) ">
-		/*
-		 * If Nimbus (introduced in Java SE 6) is not available, stay with the default
-		 * look and feel. For details see
-		 * http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
-		 */
-		try {
-			for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-				if ("Nimbus".equals(info.getName())) {
-					javax.swing.UIManager.setLookAndFeel(info.getClassName());
-					break;
-				}
-			}
-		} catch (ClassNotFoundException ex) {
-			java.util.logging.Logger.getLogger(JSNLogInForm.class.getName()).log(java.util.logging.Level.SEVERE, null,
-					ex);
-		} catch (InstantiationException ex) {
-			java.util.logging.Logger.getLogger(JSNLogInForm.class.getName()).log(java.util.logging.Level.SEVERE, null,
-					ex);
-		} catch (IllegalAccessException ex) {
-			java.util.logging.Logger.getLogger(JSNLogInForm.class.getName()).log(java.util.logging.Level.SEVERE, null,
-					ex);
-		} catch (javax.swing.UnsupportedLookAndFeelException ex) {
-			java.util.logging.Logger.getLogger(JSNLogInForm.class.getName()).log(java.util.logging.Level.SEVERE, null,
-					ex);
-		}
-		// </editor-fold>
-
-		/* Create and display the form */
-		// AnnotationConfigApplicationContext app = new
-		// AnnotationConfigApplicationContext(Initiater.class);
-		// dao= app.getBean(UserDao.class);
-		java.awt.EventQueue.invokeLater(() -> {
-			new Signup(Role.CHARITY).setVisible(true);
-			// new JSNLogInForm().setVisible(true);
-			System.out.println("END-END");
-		});
-		System.out.println("END");
-	}
-
+	private static final String PASS_WORD = "passWord";
+	private static final String USER_NAME = "userName";
 	private UserDao dao;
 	private Map<String, Boolean> validationMap = new HashMap<>();
 
@@ -121,6 +77,16 @@ public class JSNLogInForm extends JDialog {
 	// Code">//GEN-BEGIN:initComponents
 	private void initComponents() {
 
+		try {
+			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+				if ("Nimbus".equals(info.getName())) {
+					UIManager.setLookAndFeel(info.getClassName());
+					break;
+				}
+			}
+		} catch (Exception e) {
+			// If Nimbus is not available, you can set the GUI to another look and feel.
+		}
 		this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		this.setTitle("Log In");
 		this.setBackground(new java.awt.Color(153, 255, 255));
@@ -129,7 +95,7 @@ public class JSNLogInForm extends JDialog {
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 30, 104, 150, 45 };
 		gridBagLayout.rowHeights = new int[] { 30, 27, 33, 33, 23 };
-		gridBagLayout.columnWeights = new double[] { 0.0, 0.0, 0.0 };
+		gridBagLayout.columnWeights = new double[] { 0.0, 0.0, 1.0 };
 		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0 };
 		this.getContentPane().setLayout(gridBagLayout);
 		this.jLabel3 = new javax.swing.JLabel();
@@ -202,14 +168,15 @@ public class JSNLogInForm extends JDialog {
 
 			@Override
 			public void validateFailed() {
-				JSNLogInForm.this.validationMap.put(JSNLogInForm.this.userNameTextField.getName(), false);
+				JSNLogInForm.this.validationMap.put(USER_NAME, false);
 				JSNLogInForm.this.signInButton.setEnabled(false);
 			}
 
 			@Override
 			public void validatePassed() {
-				JSNLogInForm.this.validationMap.put(JSNLogInForm.this.userNameTextField.getName(), true);
-				if (JSNLogInForm.this.validationMap.get(JSNLogInForm.this.passwordPassWordField.getName())) {
+				JSNLogInForm.this.validationMap.put(USER_NAME, true);
+				if (JSNLogInForm.this.validationMap.containsKey(PASS_WORD)
+						&& JSNLogInForm.this.validationMap.get(PASS_WORD)) {
 					JSNLogInForm.this.signInButton.setEnabled(true);
 				}
 			}
@@ -230,14 +197,15 @@ public class JSNLogInForm extends JDialog {
 
 			@Override
 			public void validateFailed() {
-				JSNLogInForm.this.validationMap.put(JSNLogInForm.this.passwordPassWordField.getName(), false);
+				JSNLogInForm.this.validationMap.put(PASS_WORD, false);
 				JSNLogInForm.this.signInButton.setEnabled(false);
 			}
 
 			@Override
 			public void validatePassed() {
-				JSNLogInForm.this.validationMap.put(JSNLogInForm.this.passwordPassWordField.getName(), true);
-				if (JSNLogInForm.this.validationMap.get(JSNLogInForm.this.userNameTextField.getName())) {
+				JSNLogInForm.this.validationMap.put(PASS_WORD, true);
+				if (JSNLogInForm.this.validationMap.containsKey(USER_NAME)
+						&& JSNLogInForm.this.validationMap.get(USER_NAME)) {
 					JSNLogInForm.this.signInButton.setEnabled(true);
 				}
 			}

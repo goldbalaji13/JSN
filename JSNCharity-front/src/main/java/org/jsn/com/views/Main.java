@@ -1,44 +1,24 @@
 package org.jsn.com.views;
 
-import java.awt.Component;
 import java.awt.EventQueue;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Objects;
 
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.border.EmptyBorder;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
 
 import org.jsn.com.config.Initiater;
 import org.jsn.com.dao.UserDao;
 import org.jsn.com.entity.UserEntity;
+import org.jsn.com.views.dialogues.JSNLogInForm;
+import org.jsn.com.views.panels.AdminPanel;
+import org.jsn.com.views.panels.BaseViewPanel;
+import org.jsn.enums.Role;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 public class Main extends JFrame {
-
-	private static void addPopup(Component component, final JPopupMenu popup) {
-		component.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
-				this.showMenu(e);
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				this.showMenu(e);
-			}
-
-			private void showMenu(MouseEvent e) {
-				popup.show(e.getComponent(), e.getX(), e.getY());
-			}
-		});
-	}
 
 	/**
 	 * Launch the application.
@@ -47,69 +27,87 @@ public class Main extends JFrame {
 		EventQueue.invokeLater(() -> {
 			try {
 				Main frame = new Main();
-				frame.setVisible(true);
+				if (frame.doSignInProcedure()) {
+					frame.setVisible(true);
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		});
 	}
 
-	private JPanel contentPane;
 	private JSNLogInForm signIn;
-	private AnnotationConfigApplicationContext app;
+	private AnnotationConfigApplicationContext springApplicationContext;
 
 	private UserEntity entity;
-
-	private JLabel welcomeLabel;
 
 	/**
 	 * Create the frame.
 	 */
 	public Main() {
-		this.app = new AnnotationConfigApplicationContext(Initiater.class);
+		this.springApplicationContext = new AnnotationConfigApplicationContext(Initiater.class);
 		this.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				Main.this.app.close();
+				Main.this.springApplicationContext.close();
 			}
 
-			@Override
-			public void windowOpened(WindowEvent e) {
-				Main.this.doSignInProcedure();
-			}
 		});
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.setBounds(100, 100, 450, 300);
-		this.contentPane = new JPanel();
-		this.contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		this.setContentPane(this.contentPane);
-		this.contentPane.setLayout(null);
-
-		this.welcomeLabel = new JLabel("Welcome:");
-		this.welcomeLabel.setBounds(216, 0, 218, 27);
-		this.contentPane.add(this.welcomeLabel);
-
-		JPopupMenu popupMenu = new JPopupMenu();
-		addPopup(this.welcomeLabel, popupMenu);
-
-		JMenuItem mntmLogOut = new JMenuItem("Log out");
-		mntmLogOut.addActionListener(e -> Main.this.doSignInProcedure());
-		popupMenu.add(mntmLogOut);
+		try {
+			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+				if ("Nimbus".equals(info.getName())) {
+					UIManager.setLookAndFeel(info.getClassName());
+					break;
+				}
+			}
+		} catch (Exception e) {
+			// If Nimbus is not available, you can set the GUI to another look and feel.
+		}
 	}
 
-	private void doSignInProcedure() {
+	private void addLogOutEvent(BaseViewPanel panel) {
+		panel.mntmLogOut.addActionListener(event -> {
+			this.doSignInProcedure();
+		});
+
+	}
+
+	private boolean doSignInProcedure() {
 		JSNLogInForm signInForm = this.getSignInForm();
 		signInForm.setVisible(true);
 		if (Objects.nonNull(signInForm) && Objects.nonNull(this.entity = signInForm.getUserEntity())) {
-			this.welcomeLabel.setText(this.welcomeLabel.getText() + this.entity.getName());
+			this.makeView(this.entity.getRole());
+			return true;
 		} else {
 			this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 			this.dispose();
+			return false;
 		}
 
 	}
 
 	private JSNLogInForm getSignInForm() {
-		return new JSNLogInForm(this, this.app.getBean(UserDao.class));
+		return new JSNLogInForm(this, this.springApplicationContext.getBean(UserDao.class));
+	}
+
+	private void makeView(Role role) {
+		BaseViewPanel panel;
+		switch (role) {
+		case ADMIN:
+			panel = new AdminPanel(this.entity, this.springApplicationContext.getBean(UserDao.class));
+			break;
+
+		case CHARITY:
+			panel = new BaseViewPanel(this.entity);
+			break;
+
+		default:
+			panel = new BaseViewPanel(this.entity);
+			break;
+		}
+		this.addLogOutEvent(panel);
+		this.setContentPane(panel);
 	}
 }

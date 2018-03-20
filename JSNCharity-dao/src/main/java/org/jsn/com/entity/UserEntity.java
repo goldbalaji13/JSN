@@ -3,9 +3,15 @@ package org.jsn.com.entity;
 import org.jsn.dto.UserDto;
 import org.jsn.enums.Role;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserEntity {
 
 	public static UserEntity formEntity(UserDto dto) {

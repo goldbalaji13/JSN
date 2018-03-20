@@ -3,8 +3,10 @@ package org.jsn.com.dao;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.hibernate.Criteria;
+import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 import org.jsn.com.datasource.SessionWrapper;
 import org.jsn.com.entity.UserEntity;
@@ -38,26 +40,54 @@ public class UserDaoImpl implements UserDao {
 	}
 
 	@Override
-	public boolean deleteUser(UserEntity userObjeect) {
-		// TODO Auto-generated method stub
+	public boolean deleteUser(List<String> userNameList) {
+		Criteria criteria = this.session.createCriteria(UserDto.class);
+		criteria.add(Restrictions.in("userName", userNameList));
+		List<UserDto> list = criteria.list();
+		Transaction transaction = this.session.beginTransaction();
+		list.stream().forEach(this.session::delete);
+		transaction.commit();
 		return false;
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<UserEntity> getAll() {
+		List<UserDto> dtoList = this.session.createCriteria(UserDto.class).list();
+		return dtoList.stream().map(UserEntity::formEntity).collect(Collectors.toList());
+	}
+
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean isUserNameAvilable(String userName) {
-		// TODO Auto-generated method stub
+		Criteria criteria = this.session.createCriteria(UserDto.class);
+		Map<String, String> propertyNameValues = new HashMap<>();
+		propertyNameValues.put("userName", userName);
+		List<UserDto> list = criteria.add(Restrictions.allEq(propertyNameValues)).list();
+		if (list.isEmpty()) {
+			return true;
+		}
 		return false;
 	}
 
 	@Override
 	public boolean registerUser(UserEntity userObjeect) {
-		// TODO Auto-generated method stub
+		Transaction transaction = this.session.beginTransaction();
+		this.session.persist(userObjeect.formDto());
+		transaction.commit();
 		return false;
 	}
 
 	@Override
 	public boolean updateUser(UserEntity userObjeect) {
-		// TODO Auto-generated method stub
+		Transaction transaction = this.session.beginTransaction();
+		UserDto userDto = (UserDto) this.session.load(UserDto.class, userObjeect.getUserName());
+		userDto.setAddress(userObjeect.getAddress());
+		userDto.setName(userObjeect.getName());
+		userDto.setContactNo(userObjeect.getContactNo());
+		userDto.setCity(userObjeect.getCity());
+		this.session.persist(userDto);
+		transaction.commit();
 		return false;
 	}
 

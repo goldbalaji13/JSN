@@ -16,6 +16,17 @@ import org.springframework.context.annotation.ImportResource;
 @ComponentScan("org.jsn.com")
 public class Initiater implements ApplicationContextAware {
 
+	// public static void main(String[] args) {
+	// ApplicationContext cont = new
+	// AnnotationConfigApplicationContext(Initiater.class);
+	// UserDao dao = cont.getBean(UserDao.class);
+	// UserEntity user =
+	// UserEntity.builder().userName("JsnAdmin").password("JsnAdmin").role(Role.ADMIN)
+	// .name("Balaji
+	// Rajan").city("Chennai").contactNo("8903177053").address("Shoulinganalur").build();
+	// dao.updateUser(user);
+	// }
+
 	private ApplicationContext applicationContext;
 
 	@Autowired
@@ -30,5 +41,4 @@ public class Initiater implements ApplicationContextAware {
 	public UserDao userDao() {
 		return new UserDaoImpl(this.session);
 	}
-
 }
