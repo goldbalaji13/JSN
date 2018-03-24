@@ -174,7 +174,7 @@ public abstract class AbstractValidator extends InputVerifier implements KeyList
 			this.popup.setVisible(true);
 			return false;
 		}
-
+		this.popup.setVisible(false);
 		c.setBackground(Color.WHITE);
 
 		if (this.parent instanceof WantsValidationStatus) {

@@ -79,6 +79,13 @@ public class UserDaoImpl implements UserDao {
 	}
 
 	@Override
+	public List<UserEntity> search(Map<String, Object> searchCriteriaMap) {
+		Criteria criteria = this.session.createCriteria(UserDto.class);
+		List<UserDto> list = criteria.add(Restrictions.allEq(searchCriteriaMap)).list();
+		return list.stream().map(UserEntity::formEntity).collect(Collectors.toList());
+	}
+
+	@Override
 	public boolean updateUser(UserEntity userObjeect) {
 		Transaction transaction = this.session.beginTransaction();
 		UserDto userDto = (UserDto) this.session.load(UserDto.class, userObjeect.getUserName());

@@ -10,11 +10,13 @@ import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
 import org.jsn.com.config.Initiater;
+import org.jsn.com.dao.DrugDao;
 import org.jsn.com.dao.UserDao;
 import org.jsn.com.entity.UserEntity;
 import org.jsn.com.views.dialogues.JSNLogInForm;
 import org.jsn.com.views.panels.AdminPanel;
 import org.jsn.com.views.panels.BaseViewPanel;
+import org.jsn.com.views.panels.PharmaPanel;
 import org.jsn.enums.Role;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -100,11 +102,11 @@ public class Main extends JFrame {
 			break;
 
 		case CHARITY:
-			panel = new BaseViewPanel(this.entity);
+			panel = new PharmaPanel(this.entity, this.springApplicationContext.getBean(DrugDao.class));
 			break;
 
 		default:
-			panel = new BaseViewPanel(this.entity);
+			panel = new PharmaPanel(this.entity, this.springApplicationContext.getBean(DrugDao.class));
 			break;
 		}
 		this.addLogOutEvent(panel);

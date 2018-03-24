@@ -29,6 +29,7 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.jdbc.ReturningWork;
 import org.hibernate.jdbc.Work;
 import org.hibernate.stat.SessionStatistics;
+import org.jsn.dto.DrugDto;
 import org.jsn.dto.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -223,6 +224,7 @@ public class SessionWrapper {
 		File file = this.resourceLoader.getResource("classpath:configration.xml").getFile();
 		conf.configure(file);
 		conf.addAnnotatedClass(UserDto.class);
+		conf.addAnnotatedClass(DrugDto.class);
 		SessionFactory fact = conf.buildSessionFactory();
 		this.session = fact.openSession();
 	}

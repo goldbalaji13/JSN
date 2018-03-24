@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.jsn.com.entity.UserEntity;
 
-public interface UserDao {
+public interface UserDao extends AbstractDao<UserEntity> {
 
 	public UserEntity authernticateUser(String userName, String password);
 
