@@ -79,8 +79,9 @@ public class UserDaoImpl implements UserDao {
 	}
 
 	@Override
-	public List<UserEntity> search(Map<String, Object> searchCriteriaMap) {
+	public List<UserEntity> search(Map<String, Object> searchCriteriaMap, String SearchText) {
 		Criteria criteria = this.session.createCriteria(UserDto.class);
+		criteria.add(Restrictions.like("userName", SearchText));
 		List<UserDto> list = criteria.add(Restrictions.allEq(searchCriteriaMap)).list();
 		return list.stream().map(UserEntity::formEntity).collect(Collectors.toList());
 	}

@@ -62,6 +62,10 @@ public class SessionWrapper {
 		this.session.cancelQuery();
 	}
 
+	public void clear() {
+		this.session.clear();
+	}
+
 	public boolean contains(Object object) {
 		return this.session.contains(object);
 	}

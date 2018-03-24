@@ -5,5 +5,5 @@ import java.util.Map;
 
 public interface AbstractDao<T> {
 
-	public List<T> search(Map<String, Object> searchCriteriaMap);
+	public List<T> search(Map<String, Object> searchCriteriaMap, String searchText);
 }

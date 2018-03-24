@@ -1,2 +1,3 @@
-org\jsn\enums\Role.class
+org\jsn\dto\DrugDto.class
 org\jsn\dto\UserDto.class
+org\jsn\enums\Role.class

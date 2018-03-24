@@ -50,12 +50,14 @@ public class DrugDaoImpl implements DrugDao {
 		dto.setBatchNo(this.autoIncreaseBatchNo(dto.getDrugName(), dto.getUserName()));
 		this.session.persist(dto);
 		transaction.commit();
+		this.session.clear();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<DrugDto> search(Map<String, Object> searchCriteriaMap) {
+	public List<DrugDto> search(Map<String, Object> searchCriteriaMap, String SearchText) {
 		Criteria criteria = this.session.createCriteria(DrugDto.class);
+		criteria.add(Restrictions.like("drugName", SearchText));
 		return criteria.add(Restrictions.allEq(searchCriteriaMap)).list();
 	}
 

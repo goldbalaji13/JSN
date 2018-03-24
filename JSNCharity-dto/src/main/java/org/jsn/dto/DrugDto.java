@@ -1,8 +1,10 @@
 package org.jsn.dto;
 
 import java.io.Serializable;
+import java.sql.Date;
 import java.time.LocalDate;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -21,7 +23,8 @@ public class DrugDto implements Serializable {
 
 	private double unitPrice;
 
-	private LocalDate expiryDate;
+	@Column(columnDefinition = "date")
+	private Date expiryDate;
 
 	public int getBatchNo() {
 		return this.batchNo;
@@ -32,7 +35,7 @@ public class DrugDto implements Serializable {
 	}
 
 	public LocalDate getExpiryDate() {
-		return this.expiryDate;
+		return this.expiryDate.toLocalDate();
 	}
 
 	public int getQuantity() {
@@ -56,7 +59,7 @@ public class DrugDto implements Serializable {
 	}
 
 	public void setExpiryDate(LocalDate expiryDate) {
-		this.expiryDate = expiryDate;
+		this.expiryDate = Date.valueOf(expiryDate);
 	}
 
 	public void setQuantity(int quantity) {
