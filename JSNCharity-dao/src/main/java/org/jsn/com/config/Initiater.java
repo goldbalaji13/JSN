@@ -1,5 +1,6 @@
 package org.jsn.com.config;
 
+import org.jsn.com.dao.CharityViewDao;
 import org.jsn.com.dao.DrugDao;
 import org.jsn.com.dao.DrugDaoImpl;
 import org.jsn.com.dao.UserDao;
@@ -7,31 +8,32 @@ import org.jsn.com.dao.UserDaoImpl;
 import org.jsn.com.datasource.SessionWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.core.io.ResourceLoader;
 
 @org.springframework.context.annotation.Configuration
 @ImportResource("classpath:configration.xml")
-@ComponentScan("org.jsn.com")
 public class Initiater {
 
-	// public static void main(String[] args) {
-	// ApplicationContext cont = new
-	// AnnotationConfigApplicationContext(Initiater.class);
-	// UserDao dao = cont.getBean(UserDao.class);
-	// UserEntity user =
-	// UserEntity.builder().userName("JsnAdmin").password("JsnAdmin").role(Role.ADMIN)
-	// .name("Balaji
-	// Rajan").city("Chennai").contactNo("8903177053").address("Shoulinganalur").build();
-	// dao.updateUser(user);
-	// }
+	@Autowired
+	private ResourceLoader resourceLoader;
 
 	@Autowired
 	SessionWrapper session;
 
 	@Bean
+	public CharityViewDao charityDao() {
+		return new CharityViewDao(this.session);
+	}
+
+	@Bean
 	public DrugDao drugDao() {
 		return new DrugDaoImpl(this.session);
+	}
+
+	@Bean
+	public SessionWrapper session() {
+		return new SessionWrapper(this.resourceLoader);
 	}
 
 	@Bean

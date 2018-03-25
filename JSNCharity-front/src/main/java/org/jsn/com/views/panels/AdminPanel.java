@@ -3,6 +3,7 @@ package org.jsn.com.views.panels;
 import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -14,13 +15,14 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
+import org.apache.commons.collections.MapUtils;
 import org.jsn.com.dao.UserDao;
 import org.jsn.com.entity.UserEntity;
 import org.jsn.com.views.dialogues.Signup;
 import org.jsn.enums.Role;
 
 @SuppressWarnings("serial")
-public class AdminPanel extends BaseViewPanel {
+public class AdminPanel extends BaseViewPanel<UserEntity> {
 
 	private JPopupMenu popupMenu;
 	private JMenuItem mntmAddUser;
@@ -29,7 +31,7 @@ public class AdminPanel extends BaseViewPanel {
 	private JMenuItem mntmAddPharmacyUser;
 
 	public AdminPanel(UserEntity userEntity, UserDao dao) {
-		super(userEntity);
+		super(userEntity, dao);
 		this.dao = dao;
 	}
 
@@ -42,6 +44,18 @@ public class AdminPanel extends BaseViewPanel {
 		}
 		this.mntmDeleteUser.setEnabled(false);
 		return true;
+	}
+
+	@Override
+	protected Vector<Object> getGridVectorFromEntity(UserEntity entity) {
+		Vector<Object> modelVector = new Vector<>();
+		modelVector.add(entity.getUserName());
+		modelVector.add(entity.getName());
+		modelVector.add(entity.getRole().toString());
+		modelVector.add(entity.getCity());
+		modelVector.add(entity.getContactNo());
+		modelVector.add(entity.getAddress());
+		return modelVector;
 	}
 
 	@Override
@@ -105,6 +119,11 @@ public class AdminPanel extends BaseViewPanel {
 		return this.popupMenu;
 	}
 
+	@Override
+	protected Map<String, Object> getSearchCriteria() {
+		return MapUtils.EMPTY_MAP;
+	}
+
 	/**
 	 * Create the panel.
 	 *
@@ -112,18 +131,9 @@ public class AdminPanel extends BaseViewPanel {
 	 */
 	@Override
 	protected void refreshGrid() {
-		List<UserEntity> list = AdminPanel.this.dao.getAll();
+		this.list = AdminPanel.this.dao.getAll();
 		DefaultTableModel model = (DefaultTableModel) AdminPanel.this.baseTable.getModel();
 		model.setRowCount(0);
-		list.stream().map(entity -> {
-			Vector<String> modelVector = new Vector<>();
-			modelVector.add(entity.getUserName());
-			modelVector.add(entity.getName());
-			modelVector.add(entity.getRole().toString());
-			modelVector.add(entity.getCity());
-			modelVector.add(entity.getContactNo());
-			modelVector.add(entity.getAddress());
-			return modelVector;
-		}).forEach(model::addRow);
+		this.list.stream().map(this::getGridVectorFromEntity).forEach(model::addRow);
 	}
 }

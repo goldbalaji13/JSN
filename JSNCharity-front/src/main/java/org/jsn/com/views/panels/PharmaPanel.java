@@ -2,7 +2,9 @@ package org.jsn.com.views.panels;
 
 import java.awt.event.MouseEvent;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -24,13 +26,11 @@ import org.jsn.com.views.cellRenderes.NumberRenderer;
 import org.jsn.com.views.dialogues.AddDrug;
 import org.jsn.dto.DrugDto;
 
-public class PharmaPanel extends BaseViewPanel {
+public class PharmaPanel extends BaseViewPanel<DrugDto> {
 
 	private JPopupMenu popupMenu;
 	private final DrugDao dao;
-	private JMenuItem mntmEditDrug;
 	private JMenuItem mntmDeleteDrug;
-	private List<DrugDto> list;
 
 	/**
 	 * Create the panel.
@@ -38,7 +38,7 @@ public class PharmaPanel extends BaseViewPanel {
 	 * @param logedInDetails
 	 */
 	public PharmaPanel(UserEntity logedInDetails, DrugDao dao) {
-		super(logedInDetails);
+		super(logedInDetails, dao);
 		this.dao = dao;
 		TableColumnModel cellModel = this.baseTable.getColumnModel();
 
@@ -56,13 +56,21 @@ public class PharmaPanel extends BaseViewPanel {
 	protected boolean canShowPopup(JTable component, MouseEvent e) {
 		boolean result = super.canShowPopup(component, e);
 		if (result) {
-			this.mntmEditDrug.setEnabled(true);
 			this.mntmDeleteDrug.setEnabled(true);
 			return result;
 		}
-		this.mntmEditDrug.setEnabled(false);
 		this.mntmDeleteDrug.setEnabled(false);
 		return true;
+	}
+
+	@Override
+	protected Vector<Object> getGridVectorFromEntity(DrugDto entity) {
+		Vector<Object> modelVector = new Vector<>();
+		modelVector.add(entity.getDrugName());
+		modelVector.add(entity.getQuantity());
+		modelVector.add(entity.getUnitPrice());
+		modelVector.add(entity.getExpiryDate());
+		return modelVector;
 	}
 
 	@Override
@@ -98,15 +106,6 @@ public class PharmaPanel extends BaseViewPanel {
 		});
 		this.bodyPopopMenu.add(mntmAddDrug);
 
-		this.mntmEditDrug = new JMenuItem("Edit Drug");
-		this.mntmEditDrug.addActionListener(e -> {
-			AddDrug addDialogue = new AddDrug(OpenMode.UPDATE, this.list.get(this.baseTable.getSelectedRow()), this.dao,
-					this.clientCredentials.getUserName());
-			addDialogue.setVisible(true);
-			this.refreshGrid();
-		});
-		this.popupMenu.add(this.mntmEditDrug);
-
 		this.mntmDeleteDrug = new JMenuItem("Delete Drug");
 		this.mntmDeleteDrug.addActionListener(e -> {
 
@@ -127,17 +126,17 @@ public class PharmaPanel extends BaseViewPanel {
 	}
 
 	@Override
+	protected Map<String, Object> getSearchCriteria() {
+		Map<String, Object> criteriaMap = new HashMap<>();
+		criteriaMap.put("userName", this.clientCredentials.getUserName());
+		return criteriaMap;
+	}
+
+	@Override
 	protected void refreshGrid() {
 		this.list = this.dao.getPharmaDrug(this.clientCredentials.getUserName());
 		DefaultTableModel model = (DefaultTableModel) this.baseTable.getModel();
 		model.setRowCount(0);
-		this.list.stream().map(entity -> {
-			Vector<Object> modelVector = new Vector<>();
-			modelVector.add(entity.getDrugName());
-			modelVector.add(entity.getQuantity());
-			modelVector.add(entity.getUnitPrice());
-			modelVector.add(entity.getExpiryDate());
-			return modelVector;
-		}).forEach(model::addRow);
+		this.list.stream().map(this::getGridVectorFromEntity).forEach(model::addRow);
 	}
 }

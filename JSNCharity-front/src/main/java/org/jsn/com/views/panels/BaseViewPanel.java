@@ -2,8 +2,13 @@ package org.jsn.com.views.panels;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -17,11 +22,13 @@ import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
+import org.jsn.com.dao.AbstractDao;
 import org.jsn.com.entity.UserEntity;
 
-public abstract class BaseViewPanel extends JPanel {
+public abstract class BaseViewPanel<T> extends JPanel {
 
 	private static void addPopup(Component component, final JPopupMenu popup) {
 		component.addMouseListener(new MouseAdapter() {
@@ -46,12 +53,16 @@ public abstract class BaseViewPanel extends JPanel {
 	protected JTextField textField;
 
 	protected JPopupMenu bodyPopopMenu;
+	private final AbstractDao<T> dao;
+
+	protected List<T> list;
 
 	/**
 	 * Create the panel.
 	 */
-	public BaseViewPanel(UserEntity logedInDetails) {
+	public BaseViewPanel(UserEntity logedInDetails, AbstractDao<T> dao) {
 		this.clientCredentials = logedInDetails;
+		this.dao = dao;
 		this.addAncestorListener(new AncestorListener() {
 			@Override
 			public void ancestorAdded(AncestorEvent event) {
@@ -77,6 +88,12 @@ public abstract class BaseViewPanel extends JPanel {
 		this.add(toolBar, BorderLayout.NORTH);
 
 		this.textField = new JTextField();
+		this.textField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				BaseViewPanel.this.search();
+			}
+		});
 		this.textField.setToolTipText("Search Box");
 		toolBar.add(this.textField, BorderLayout.CENTER);
 		this.textField.setColumns(10);
@@ -131,9 +148,24 @@ public abstract class BaseViewPanel extends JPanel {
 		return component.getSelectedRowCount() > 0;
 	}
 
+	protected abstract Vector<Object> getGridVectorFromEntity(T entity);
+
 	protected abstract TableModel getModel();
 
 	protected abstract JPopupMenu getPopupMenu();
 
+	protected abstract Map<String, Object> getSearchCriteria();
+
 	protected abstract void refreshGrid();
+
+	protected void search() {
+		if (this.textField.getText().isEmpty()) {
+			this.refreshGrid();
+		} else {
+			DefaultTableModel model = (DefaultTableModel) this.baseTable.getModel();
+			model.setRowCount(0);
+			this.list = this.dao.search(this.getSearchCriteria(), this.textField.getText());
+			this.list.stream().map(this::getGridVectorFromEntity).forEach(model::addRow);
+		}
+	}
 }

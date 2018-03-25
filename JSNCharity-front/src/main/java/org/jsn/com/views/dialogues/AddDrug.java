@@ -1,7 +1,6 @@
 package org.jsn.com.views.dialogues;
 
 import java.awt.Color;
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -48,21 +47,21 @@ public class AddDrug extends JDialog {
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(() -> {
-			try {
-				DrugDto dto = new DrugDto();
-				dto.setDrugName("name");
-				dto.setExpiryDate(LocalDate.now());
-				dto.setQuantity(1);
-				dto.setUnitPrice(122578.15);
-				AddDrug window = new AddDrug(OpenMode.UPDATE, dto, null, "");
-				window.setVisible(true);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		});
-	}
+	// public static void main(String[] args) {
+	// EventQueue.invokeLater(() -> {
+	// try {
+	// DrugDto dto = new DrugDto();
+	// dto.setDrugName("name");
+	// dto.setExpiryDate(LocalDate.now());
+	// dto.setQuantity(1);
+	// dto.setUnitPrice(122578.15);
+	// AddDrug window = new AddDrug(OpenMode.UPDATE, dto, null, "");
+	// window.setVisible(true);
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// }
+	// });
+	// }
 
 	private JTextField drugName;
 	private Map<String, Boolean> validationMap = new HashMap<>();

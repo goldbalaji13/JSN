@@ -1,7 +1,11 @@
 package org.jsn.com.dao;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.PostConstruct;
 
 import org.hibernate.Criteria;
 import org.hibernate.Transaction;
@@ -12,6 +16,9 @@ import org.jsn.dto.DrugDto;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class DrugDaoImpl implements DrugDao {
+	private static final String EXPIRY_DATE = "expiryDate";
+	private static final String DRUG_NAME = "drugName";
+	private static final String USER_NAME = "userName";
 	private final SessionWrapper session;
 
 	@Autowired
@@ -19,10 +26,11 @@ public class DrugDaoImpl implements DrugDao {
 		this.session = session;
 	}
 
+	@SuppressWarnings("unchecked")
 	private int autoIncreaseBatchNo(String drugName, String userName) {
 		Criteria criteria = this.session.createCriteria(DrugDto.class);
-		criteria.add(Restrictions.eq("userName", userName));
-		criteria.add(Restrictions.eq("drugName", drugName));
+		criteria.add(Restrictions.eq(USER_NAME, userName));
+		criteria.add(Restrictions.eq(DRUG_NAME, drugName));
 		criteria.addOrder(Order.desc("batchNo"));
 		criteria.setMaxResults(1);
 		List<DrugDto> list = criteria.list();
@@ -36,12 +44,21 @@ public class DrugDaoImpl implements DrugDao {
 		transaction.commit();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<DrugDto> getPharmaDrug(String userName) {
 		Criteria criteria = this.session.createCriteria(DrugDto.class);
-		criteria.add(Restrictions.eq("userName", userName));
-		List<DrugDto> list = criteria.list();
-		return list;
+		criteria.add(Restrictions.eq(USER_NAME, userName));
+		return criteria.list();
+	}
+
+	@PostConstruct
+	private void init() {
+		Criteria criteria = this.session.createCriteria(DrugDto.class);
+		Date lo = Date.valueOf(LocalDate.now());
+		Date hi = Date.valueOf(LocalDate.now().plusWeeks(1));
+		criteria.add(Restrictions.lt(EXPIRY_DATE, lo));
+		this.delete(criteria.list());
 	}
 
 	@Override
@@ -57,7 +74,7 @@ public class DrugDaoImpl implements DrugDao {
 	@Override
 	public List<DrugDto> search(Map<String, Object> searchCriteriaMap, String SearchText) {
 		Criteria criteria = this.session.createCriteria(DrugDto.class);
-		criteria.add(Restrictions.like("drugName", SearchText));
+		criteria.add(Restrictions.like(DRUG_NAME, SearchText));
 		return criteria.add(Restrictions.allEq(searchCriteriaMap)).list();
 	}
 

@@ -1,11 +1,14 @@
 package org.jsn.com.datasource;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.hibernate.CacheMode;
 import org.hibernate.Criteria;
@@ -35,9 +38,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.stereotype.Repository;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
-@Repository
 @Scope(scopeName = ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class SessionWrapper {
 
@@ -223,10 +226,15 @@ public class SessionWrapper {
 	}
 
 	@PostConstruct
-	public void init() throws IOException {
+	public void init() throws IOException, ParserConfigurationException, SAXException {
 		Configuration conf = new Configuration();
-		File file = this.resourceLoader.getResource("classpath:configration.xml").getFile();
-		conf.configure(file);
+		InputStream fileStream = this.resourceLoader.getResource("classpath:configration.xml").getInputStream();
+		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder;
+		Document document;
+		builder = dbFactory.newDocumentBuilder();
+		document = builder.parse(fileStream);
+		conf.configure(document);
 		conf.addAnnotatedClass(UserDto.class);
 		conf.addAnnotatedClass(DrugDto.class);
 		SessionFactory fact = conf.buildSessionFactory();

@@ -6,16 +6,19 @@ import java.awt.event.WindowEvent;
 import java.util.Objects;
 
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
 import org.jsn.com.config.Initiater;
+import org.jsn.com.dao.CharityViewDao;
 import org.jsn.com.dao.DrugDao;
 import org.jsn.com.dao.UserDao;
 import org.jsn.com.entity.UserEntity;
 import org.jsn.com.views.dialogues.JSNLogInForm;
 import org.jsn.com.views.panels.AdminPanel;
 import org.jsn.com.views.panels.BaseViewPanel;
+import org.jsn.com.views.panels.CharityViewContainerPanel;
 import org.jsn.com.views.panels.PharmaPanel;
 import org.jsn.enums.Role;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -95,21 +98,28 @@ public class Main extends JFrame {
 	}
 
 	private void makeView(Role role) {
-		BaseViewPanel panel;
+		JPanel panel;
+		BaseViewPanel iPanel;
 		switch (role) {
 		case ADMIN:
-			panel = new AdminPanel(this.entity, this.springApplicationContext.getBean(UserDao.class));
+			iPanel = new AdminPanel(this.entity, this.springApplicationContext.getBean(UserDao.class));
+			panel = iPanel;
 			break;
 
 		case CHARITY:
-			panel = new PharmaPanel(this.entity, this.springApplicationContext.getBean(DrugDao.class));
+			panel = new CharityViewContainerPanel(this.entity,
+					this.springApplicationContext.getBean(CharityViewDao.class),
+					this.springApplicationContext.getBean(DrugDao.class));
+			iPanel = ((CharityViewContainerPanel) panel).panel;
 			break;
 
 		default:
-			panel = new PharmaPanel(this.entity, this.springApplicationContext.getBean(DrugDao.class));
+			iPanel = new PharmaPanel(this.entity, this.springApplicationContext.getBean(DrugDao.class));
+			panel = iPanel;
 			break;
 		}
-		this.addLogOutEvent(panel);
+		this.addLogOutEvent(iPanel);
 		this.setContentPane(panel);
+		this.revalidate();
 	}
 }

@@ -6,6 +6,7 @@ import java.awt.FlowLayout;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.net.URL;
 import java.util.Objects;
 
 import javax.swing.ImageIcon;
@@ -46,7 +47,7 @@ public abstract class AbstractValidator extends InputVerifier implements KeyList
 		c.addKeyListener(this);
 		c.setInputVerifier(this);
 		this.messageLabel = new JLabel(message + " ");
-		String path = this.getClass().getClassLoader().getResource("images/exception_16x16.png").getPath();
+		URL path = this.getClass().getClassLoader().getResource("images/exception_16x16.png");
 		this.image = new JLabel(new ImageIcon(path));
 		this.component = c;
 	}
