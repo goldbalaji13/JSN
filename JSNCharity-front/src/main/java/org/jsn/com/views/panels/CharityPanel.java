@@ -8,7 +8,9 @@ import java.util.function.Consumer;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
 import org.apache.commons.collections.MapUtils;
@@ -16,6 +18,7 @@ import org.jsn.com.dao.CharityViewDao;
 import org.jsn.com.dao.DrugDao;
 import org.jsn.com.entity.JoinedEntity;
 import org.jsn.com.entity.UserEntity;
+import org.jsn.com.views.cellRenderes.NumberRenderer;
 import org.jsn.com.views.dialogues.AddToCart;
 
 public class CharityPanel extends BaseViewPanel<JoinedEntity> {
@@ -36,7 +39,18 @@ public class CharityPanel extends BaseViewPanel<JoinedEntity> {
 		this.dao = dao;
 		this.event = event;
 		this.drugDao = drugDao;
-		this.list = this.dao.getCharityDrug();
+		this.setList(this.dao.getCharityDrug());
+		TableColumnModel cellModel = this.baseTable.getColumnModel();
+
+		cellModel.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		cellModel.getColumn(1).setCellRenderer(NumberRenderer.getIntegerRenderer());
+		cellModel.getColumn(2).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+		cellModel.getColumn(3).setCellRenderer(NumberRenderer.getIntegerRenderer());
+	}
+
+	@Override
+	protected boolean filter(JoinedEntity entity, String text) {
+		return entity.getDrugName().contains(text);
 	}
 
 	@Override
@@ -54,7 +68,7 @@ public class CharityPanel extends BaseViewPanel<JoinedEntity> {
 	}
 
 	public List<JoinedEntity> getMasterList() {
-		return this.list;
+		return this.getList();
 	}
 
 	@Override
@@ -83,12 +97,12 @@ public class CharityPanel extends BaseViewPanel<JoinedEntity> {
 
 		JMenuItem mntmAddToCart = new JMenuItem("Add To Cart");
 		mntmAddToCart.addActionListener(e -> {
-			JoinedEntity entity = this.list.get(this.baseTable.getSelectedRow());
+			JoinedEntity entity = this.getList().get(this.baseTable.getSelectedRow());
 			AddToCart cart = new AddToCart(entity.getQuantity());
 			cart.setVisible(true);
 			if (cart.ok) {
 				entity.sell(cart.sellQuantity);
-				CharityPanel.this.event.accept(CharityPanel.this.list);
+				CharityPanel.this.event.accept(CharityPanel.this.getList());
 				this.refreshGrid();
 			}
 		});
@@ -103,21 +117,17 @@ public class CharityPanel extends BaseViewPanel<JoinedEntity> {
 
 	@Override
 	public void refreshGrid() {
+		super.refreshGrid();
 		DefaultTableModel model = (DefaultTableModel) this.baseTable.getModel();
 		model.setRowCount(0);
-		this.list.stream().map(this::getGridVectorFromEntity).forEach(model::addRow);
+		this.getList().stream().map(this::getGridVectorFromEntity).forEach(model::addRow);
+		this.event.accept(CharityPanel.this.getList());
 	}
 
 	@Override
 	protected void search() {
-		if (this.textField.getText().isEmpty()) {
-			this.refreshGrid();
-		} else {
-			DefaultTableModel model = (DefaultTableModel) this.baseTable.getModel();
-			model.setRowCount(0);
-			this.list.stream().filter(entity -> entity.getDrugName().contains(this.textField.getText()))
-					.map(this::getGridVectorFromEntity).forEach(model::addRow);
-		}
+		super.search();
+		this.event.accept(CharityPanel.this.getList());
 	}
 
 }

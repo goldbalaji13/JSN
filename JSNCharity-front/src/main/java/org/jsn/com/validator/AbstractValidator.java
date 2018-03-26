@@ -112,7 +112,7 @@ public abstract class AbstractValidator extends InputVerifier implements KeyList
 	@Override
 	public void keyReleased(KeyEvent e) {
 		this.popup.setVisible(false);
-		this.verify(this.component);
+		this.verify(null);
 	}
 
 	/**
@@ -164,11 +164,11 @@ public abstract class AbstractValidator extends InputVerifier implements KeyList
 			if (Objects.nonNull(this.statusAcceptor)) {
 				this.statusAcceptor.validateFailed();
 			}
-			c.setBackground(Color.PINK);
+			this.component.setBackground(Color.PINK);
 			this.popup.setSize(0, 0);
-			this.popup.setLocationRelativeTo(c);
+			this.popup.setLocationRelativeTo(this.component);
 			this.point = this.popup.getLocation();
-			this.cDim = c.getSize();
+			this.cDim = this.component.getSize();
 			this.popup.setLocation(this.point.x - (int) this.cDim.getWidth() / 2,
 					this.point.y + (int) this.cDim.getHeight() / 2);
 			this.popup.pack();
@@ -176,7 +176,7 @@ public abstract class AbstractValidator extends InputVerifier implements KeyList
 			return false;
 		}
 		this.popup.setVisible(false);
-		c.setBackground(Color.WHITE);
+		this.component.setBackground(Color.WHITE);
 
 		if (this.parent instanceof WantsValidationStatus) {
 			((WantsValidationStatus) this.parent).validatePassed();

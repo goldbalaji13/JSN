@@ -40,8 +40,12 @@ public class DrugDaoImpl implements DrugDao {
 	@Override
 	public void delete(List<DrugDto> deleteDrugList) {
 		Transaction transaction = this.session.beginTransaction();
-		deleteDrugList.stream().forEach(this.session::delete);
-		transaction.commit();
+		try {
+			deleteDrugList.stream().forEach(this.session::delete);
+			transaction.commit();
+		} catch (Exception e) {
+			transaction.rollback();
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -64,10 +68,14 @@ public class DrugDaoImpl implements DrugDao {
 	@Override
 	public void insert(DrugDto dto) {
 		Transaction transaction = this.session.beginTransaction();
-		dto.setBatchNo(this.autoIncreaseBatchNo(dto.getDrugName(), dto.getUserName()));
-		this.session.persist(dto);
-		transaction.commit();
-		this.session.clear();
+		try {
+			dto.setBatchNo(this.autoIncreaseBatchNo(dto.getDrugName(), dto.getUserName()));
+			this.session.persist(dto);
+			transaction.commit();
+			this.session.clear();
+		} catch (Exception e) {
+			transaction.rollback();
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -81,8 +89,12 @@ public class DrugDaoImpl implements DrugDao {
 	@Override
 	public void update(DrugDto dto) {
 		Transaction transaction = this.session.beginTransaction();
-		this.session.update(dto);
-		transaction.commit();
+		try {
+			this.session.update(dto);
+			transaction.commit();
+		} catch (Exception e) {
+			transaction.rollback();
+		}
 	}
 
 }

@@ -47,6 +47,11 @@ public class AdminPanel extends BaseViewPanel<UserEntity> {
 	}
 
 	@Override
+	protected boolean filter(UserEntity entity, String text) {
+		return entity.getUserName().contains(text);
+	}
+
+	@Override
 	protected Vector<Object> getGridVectorFromEntity(UserEntity entity) {
 		Vector<Object> modelVector = new Vector<>();
 		modelVector.add(entity.getUserName());
@@ -131,9 +136,9 @@ public class AdminPanel extends BaseViewPanel<UserEntity> {
 	 */
 	@Override
 	protected void refreshGrid() {
-		this.list = AdminPanel.this.dao.getAll();
+		this.setList(AdminPanel.this.dao.getAll());
 		DefaultTableModel model = (DefaultTableModel) AdminPanel.this.baseTable.getModel();
 		model.setRowCount(0);
-		this.list.stream().map(this::getGridVectorFromEntity).forEach(model::addRow);
+		this.getList().stream().map(this::getGridVectorFromEntity).forEach(model::addRow);
 	}
 }

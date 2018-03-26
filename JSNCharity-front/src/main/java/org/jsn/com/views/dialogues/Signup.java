@@ -209,8 +209,11 @@ public class Signup extends JDialog {
 					this.setMessage("userId Cannont be blank");
 					return false;
 				}
-				this.setMessage(USER_ID_ALREADY_REGISTERED);
-				return Signup.this.userDao.isUserNameAvilable(Signup.this.userIdTextField.getText());
+				if (java.util.Objects.nonNull(c)) {
+					this.setMessage(USER_ID_ALREADY_REGISTERED);
+					return Signup.this.userDao.isUserNameAvilable(Signup.this.userIdTextField.getText());
+				}
+				return true;
 			}
 		};
 		WantsValidationStatus passWordStatus = new WantsValidationStatus() {

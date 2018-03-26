@@ -64,6 +64,11 @@ public class PharmaPanel extends BaseViewPanel<DrugDto> {
 	}
 
 	@Override
+	protected boolean filter(DrugDto entity, String text) {
+		return entity.getDrugName().contains(text);
+	}
+
+	@Override
 	protected Vector<Object> getGridVectorFromEntity(DrugDto entity) {
 		Vector<Object> modelVector = new Vector<>();
 		modelVector.add(entity.getDrugName());
@@ -114,7 +119,7 @@ public class PharmaPanel extends BaseViewPanel<DrugDto> {
 					"Deletion Warning", dialogButton);
 			DefaultTableModel model = (DefaultTableModel) this.baseTable.getModel();
 			List<DrugDto> deleteDrugList = IntStream.of(this.baseTable.getSelectedRows()).boxed()
-					.map(index -> this.list.get(index)).collect(Collectors.toList());
+					.map(index -> this.getList().get(index)).collect(Collectors.toList());
 			if (dialogResult == 0 && !deleteDrugList.isEmpty()) {
 
 				this.dao.delete(deleteDrugList);
@@ -134,9 +139,9 @@ public class PharmaPanel extends BaseViewPanel<DrugDto> {
 
 	@Override
 	protected void refreshGrid() {
-		this.list = this.dao.getPharmaDrug(this.clientCredentials.getUserName());
+		this.setList(this.dao.getPharmaDrug(this.clientCredentials.getUserName()));
 		DefaultTableModel model = (DefaultTableModel) this.baseTable.getModel();
 		model.setRowCount(0);
-		this.list.stream().map(this::getGridVectorFromEntity).forEach(model::addRow);
+		this.getList().stream().map(this::getGridVectorFromEntity).forEach(model::addRow);
 	}
 }

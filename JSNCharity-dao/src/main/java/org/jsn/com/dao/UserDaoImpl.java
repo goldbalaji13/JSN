@@ -41,12 +41,16 @@ public class UserDaoImpl implements UserDao {
 
 	@Override
 	public boolean deleteUser(List<String> userNameList) {
-		Criteria criteria = this.session.createCriteria(UserDto.class);
-		criteria.add(Restrictions.in("userName", userNameList));
-		List<UserDto> list = criteria.list();
 		Transaction transaction = this.session.beginTransaction();
-		list.stream().forEach(this.session::delete);
-		transaction.commit();
+		try {
+			Criteria criteria = this.session.createCriteria(UserDto.class);
+			criteria.add(Restrictions.in("userName", userNameList));
+			List<UserDto> list = criteria.list();
+			list.stream().forEach(this.session::delete);
+			transaction.commit();
+		} catch (Exception e) {
+			transaction.rollback();
+		}
 		return false;
 	}
 
@@ -73,8 +77,12 @@ public class UserDaoImpl implements UserDao {
 	@Override
 	public boolean registerUser(UserEntity userObjeect) {
 		Transaction transaction = this.session.beginTransaction();
-		this.session.persist(userObjeect.formDto());
-		transaction.commit();
+		try {
+			this.session.persist(userObjeect.formDto());
+			transaction.commit();
+		} catch (Exception e) {
+			transaction.rollback();
+		}
 		return false;
 	}
 
@@ -89,13 +97,17 @@ public class UserDaoImpl implements UserDao {
 	@Override
 	public boolean updateUser(UserEntity userObjeect) {
 		Transaction transaction = this.session.beginTransaction();
-		UserDto userDto = (UserDto) this.session.load(UserDto.class, userObjeect.getUserName());
-		userDto.setAddress(userObjeect.getAddress());
-		userDto.setName(userObjeect.getName());
-		userDto.setContactNo(userObjeect.getContactNo());
-		userDto.setCity(userObjeect.getCity());
-		this.session.persist(userDto);
-		transaction.commit();
+		try {
+			UserDto userDto = (UserDto) this.session.load(UserDto.class, userObjeect.getUserName());
+			userDto.setAddress(userObjeect.getAddress());
+			userDto.setName(userObjeect.getName());
+			userDto.setContactNo(userObjeect.getContactNo());
+			userDto.setCity(userObjeect.getCity());
+			this.session.persist(userDto);
+			transaction.commit();
+		} catch (Exception e) {
+			transaction.rollback();
+		}
 		return false;
 	}
 

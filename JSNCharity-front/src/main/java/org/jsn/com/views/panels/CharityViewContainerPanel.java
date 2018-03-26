@@ -17,12 +17,15 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 
 import org.jsn.com.dao.CharityViewDao;
 import org.jsn.com.dao.DrugDao;
 import org.jsn.com.entity.JoinedEntity;
 import org.jsn.com.entity.UserEntity;
+import org.jsn.com.views.cellRenderes.NumberRenderer;
 
 public class CharityViewContainerPanel extends JPanel {
 	public CharityPanel panel;
@@ -58,7 +61,7 @@ public class CharityViewContainerPanel extends JPanel {
 
 		this.table = new JTable();
 		this.table.setModel(new DefaultTableModel(new Object[][] {}, new String[] { "Drug Name", "Purchase Quantity",
-				"Unit Price", "Days to expire", "Pharma Name", "Contact", "City", "Address" }) {
+				"Reduced Unit Price", "Days to expire", "Pharma Name", "Contact", "City", "Address" }) {
 			Class[] columnTypes = new Class[] { String.class, Integer.class, Double.class, Integer.class, String.class,
 					String.class, String.class, String.class };
 
@@ -73,6 +76,12 @@ public class CharityViewContainerPanel extends JPanel {
 			}
 
 		});
+		TableColumnModel cellModel = this.table.getColumnModel();
+
+		cellModel.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		cellModel.getColumn(1).setCellRenderer(NumberRenderer.getIntegerRenderer());
+		cellModel.getColumn(2).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+		cellModel.getColumn(3).setCellRenderer(NumberRenderer.getIntegerRenderer());
 		scrollPane.setViewportView(this.table);
 
 		JPopupMenu popupMenu = new JPopupMenu();
@@ -83,7 +92,6 @@ public class CharityViewContainerPanel extends JPanel {
 		mntmDelete.addActionListener(e -> {
 			this.list.get(this.table.getSelectedRow()).takeBack();
 			this.panel.refreshGrid();
-
 		});
 		popupMenu.add(mntmDelete);
 
@@ -119,7 +127,7 @@ public class CharityViewContainerPanel extends JPanel {
 		Vector<Object> modelVector = new Vector<>();
 		modelVector.add(entity.getDrugName());
 		modelVector.add(entity.getSoldQuantity());
-		modelVector.add(entity.getUnitPrice());
+		modelVector.add(entity.getUnitPrice() * 0.5);
 		modelVector.add(LocalDate.now().until(entity.getExpiryDate()).getDays());
 		modelVector.add(entity.getName());
 		modelVector.add(entity.getContactNo());

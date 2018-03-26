@@ -6,6 +6,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -55,7 +56,9 @@ public abstract class BaseViewPanel<T> extends JPanel {
 	protected JPopupMenu bodyPopopMenu;
 	private final AbstractDao<T> dao;
 
-	protected List<T> list;
+	private List<T> list;
+	@SuppressWarnings("unchecked")
+	private List<T> backupList = new ArrayList();
 
 	/**
 	 * Create the panel.
@@ -148,7 +151,13 @@ public abstract class BaseViewPanel<T> extends JPanel {
 		return component.getSelectedRowCount() > 0;
 	}
 
+	protected abstract boolean filter(T entity, String text);
+
 	protected abstract Vector<Object> getGridVectorFromEntity(T entity);
+
+	public List<T> getList() {
+		return this.list;
+	}
 
 	protected abstract TableModel getModel();
 
@@ -156,7 +165,10 @@ public abstract class BaseViewPanel<T> extends JPanel {
 
 	protected abstract Map<String, Object> getSearchCriteria();
 
-	protected abstract void refreshGrid();
+	protected void refreshGrid() {
+		this.list.clear();
+		this.list.addAll(this.backupList);
+	};
 
 	protected void search() {
 		if (this.textField.getText().isEmpty()) {
@@ -164,8 +176,15 @@ public abstract class BaseViewPanel<T> extends JPanel {
 		} else {
 			DefaultTableModel model = (DefaultTableModel) this.baseTable.getModel();
 			model.setRowCount(0);
-			this.list = this.dao.search(this.getSearchCriteria(), this.textField.getText());
-			this.list.stream().map(this::getGridVectorFromEntity).forEach(model::addRow);
+			this.list.clear();
+			this.backupList.stream().filter(entity -> this.filter(entity, this.textField.getText()))
+					.peek(this.list::add).map(this::getGridVectorFromEntity).forEach(model::addRow);
 		}
+	}
+
+	public void setList(List<T> list) {
+		this.list = list;
+		this.backupList.clear();
+		this.backupList.addAll(list);
 	}
 }
