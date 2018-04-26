@@ -67,6 +67,10 @@ public class CharityPanel extends BaseViewPanel<JoinedEntity> {
 		return modelVector;
 	}
 
+	public String getHospitalName() {
+		return this.clientCredentials.getName();
+	}
+
 	public List<JoinedEntity> getMasterList() {
 		return this.getList();
 	}
@@ -115,6 +119,11 @@ public class CharityPanel extends BaseViewPanel<JoinedEntity> {
 		return MapUtils.EMPTY_MAP;
 	}
 
+	public void hardRefetch() {
+		this.setList(this.dao.getCharityDrug());
+		this.refreshGrid();
+	}
+
 	@Override
 	public void refreshGrid() {
 		super.refreshGrid();
@@ -129,5 +138,4 @@ public class CharityPanel extends BaseViewPanel<JoinedEntity> {
 		super.search();
 		this.event.accept(CharityPanel.this.getList());
 	}
-
 }

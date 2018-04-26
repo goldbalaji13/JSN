@@ -1,6 +1,8 @@
 org\jsn\com\dao\DrugDao.class
 org\jsn\com\dao\DrugDaoImpl.class
 org\jsn\com\datasource\SessionWrapper.class
+org\jsn\com\entity\JoinedEntity.class
+org\jsn\com\dao\CharityViewDao.class
 org\jsn\com\entity\UserEntity.class
 org\jsn\com\dao\AbstractDao.class
 org\jsn\com\dao\UserDao.class

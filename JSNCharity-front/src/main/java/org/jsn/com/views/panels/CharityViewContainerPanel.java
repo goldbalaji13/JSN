@@ -2,15 +2,21 @@ package org.jsn.com.views.panels;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dialog.ModalityType;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
+import java.util.stream.Collectors;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -26,6 +32,8 @@ import org.jsn.com.dao.DrugDao;
 import org.jsn.com.entity.JoinedEntity;
 import org.jsn.com.entity.UserEntity;
 import org.jsn.com.views.cellRenderes.NumberRenderer;
+import org.jsn.com.views.dialogues.PatientDetails;
+import org.jsn.com.views.dialogues.PdfViewer;
 
 public class CharityViewContainerPanel extends JPanel {
 	public CharityPanel panel;
@@ -96,6 +104,15 @@ public class CharityViewContainerPanel extends JPanel {
 		popupMenu.add(mntmDelete);
 
 		JButton btnNewButton = new JButton("Finish And Check Out");
+		btnNewButton.addActionListener(e -> {
+			PatientDetails detail = new PatientDetails();
+			detail.setVisible(true);
+			if (detail.getResult() == 1) {
+				this.showPdfPrintDialogue(detail.getPatientName(), detail.getPatientAge());
+				this.list.stream().map(JoinedEntity::getDrugDto).forEach(drugDao::update);
+				this.panel.hardRefetch();
+			}
+		});
 		panel_1.add(btnNewButton, BorderLayout.SOUTH);
 	}
 
@@ -134,5 +151,29 @@ public class CharityViewContainerPanel extends JPanel {
 		modelVector.add(entity.getCity());
 		modelVector.add(entity.getAddress());
 		return modelVector;
+	}
+
+	private void showPdfPrintDialogue(String name, int age) {
+		Map<String, Object> DataBeanList = new HashMap();
+		DataBeanList.put("billerName", name);
+		DataBeanList.put("billerAge", age);
+		DataBeanList.put("hospitalName", this.panel.getHospitalName());
+
+		List<Map<String, Object>> drugList = this.list.stream().map(entity -> {
+			Map<String, Object> gridMap = new HashMap();
+			gridMap.put("pharmaName", entity.getName());
+			gridMap.put("drugName", entity.getDrugName());
+			gridMap.put("quantity", entity.getSoldQuantity());
+			gridMap.put("unitPrice", new BigDecimal(entity.getUnitPrice()));
+			return gridMap;
+		}).collect(Collectors.toList());
+		PdfViewer pdfViewer = new PdfViewer(DataBeanList, drugList);
+		JDialog frame = new JDialog();
+		frame.setTitle("Bill Report");
+		frame.setModalityType(ModalityType.APPLICATION_MODAL);
+		frame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		frame.getContentPane().add(pdfViewer);
+		frame.pack();
+		frame.setVisible(true);
 	}
 }

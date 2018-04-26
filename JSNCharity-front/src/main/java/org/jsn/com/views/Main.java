@@ -53,10 +53,14 @@ public class Main extends JFrame {
 		this.springApplicationContext = new AnnotationConfigApplicationContext(Initiater.class);
 		this.addWindowListener(new WindowAdapter() {
 			@Override
+			public void windowClosed(WindowEvent e) {
+				System.exit(NORMAL);
+			}
+
+			@Override
 			public void windowClosing(WindowEvent e) {
 				Main.this.springApplicationContext.close();
 			}
-
 		});
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.setBounds(100, 100, 450, 300);
