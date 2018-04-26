@@ -9,6 +9,7 @@ org\jsn\com\views\panels\CharityViewContainerPanel.class
 org\jsn\com\validator\WantsValidationStatus.class
 org\jsn\com\views\dialogues\Signup$13.class
 org\jsn\com\views\dialogues\AddDrug$1.class
+org\jsn\com\views\dialogues\PatientDetails.class
 org\jsn\com\views\dialogues\Signup.class
 org\jsn\com\views\dialogues\AddDrug$2.class
 org\jsn\com\views\panels\CharityViewContainerPanel$1.class
@@ -19,6 +20,7 @@ org\jsn\com\views\panels\BaseViewPanel$3.class
 org\jsn\com\views\dialogues\Signup$7.class
 org\jsn\com\views\panels\BaseViewPanel.class
 org\jsn\com\views\dialogues\AddDrug$6.class
+org\jsn\com\views\dialogues\PdfViewer$1.class
 org\jsn\com\views\dialogues\JSNLogInForm$1.class
 org\jsn\com\views\dialogues\Signup$12.class
 org\jsn\com\views\dialogues\Signup$1.class
@@ -32,6 +34,7 @@ org\jsn\com\views\dialogues\Signup$8.class
 org\jsn\com\views\panels\CharityViewContainerPanel$2.class
 org\jsn\com\views\dialogues\JSNLogInForm$2.class
 org\jsn\com\views\dialogues\AddToCart.class
+org\jsn\com\views\dialogues\PdfViewer$Navigation.class
 org\jsn\com\views\panels\AdminPanel.class
 org\jsn\com\views\Main$2.class
 org\jsn\com\views\dialogues\Signup$11.class
@@ -40,6 +43,7 @@ org\jsn\com\views\panels\CharityPanel$1.class
 org\jsn\com\views\dialogues\Signup$5.class
 org\jsn\com\views\dialogues\AddDrug$4.class
 org\jsn\com\views\dialogues\Signup$9.class
+org\jsn\com\views\dialogues\PdfViewer.class
 org\jsn\com\views\dialogues\Signup$2.class
 org\jsn\com\views\dialogues\JSNLogInForm$3.class
 org\jsn\com\views\Main.class
@@ -47,4 +51,5 @@ org\jsn\com\views\panels\BaseViewPanel$4.class
 org\jsn\com\views\dialogues\Signup$6.class
 org\jsn\com\viewEnums\OpenMode.class
 org\jsn\com\views\dialogues\AddDrug.class
+org\jsn\com\views\dialogues\PdfViewer$PageNavigationListener.class
 org\jsn\com\views\panels\BaseViewPanel$1.class
